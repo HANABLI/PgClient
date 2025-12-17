@@ -10,6 +10,7 @@
  */
 #include <SystemUtils/DiagnosticsSender.hpp>
 #include <StringUtils/StringUtils.hpp>
+#include <string_view>
 #include <libpq-fe.h>
 #include <memory.h>
 #include <memory>
@@ -49,6 +50,16 @@ namespace Postgresql
         ExecStatusType Status() const;
 
         std::string_view View(int row, int col) const;
+
+        std::string_view View(int row, const char* colName, std::string_view def = {}) const;
+
+        std::string Text(int row, const char* colName, std::string_view def = {}) const;
+
+        std::string TextRequired(int row, const char* colName) const;
+
+        int Int(int row, const char* colName, int def) const;
+
+        bool Bool(int row, const char* colName, bool def) const;
 
         SystemUtils::DiagnosticsSender::UnsubscribeDelegate SubscribeToDiagnostics(
             SystemUtils::DiagnosticsSender::DiagnosticMessageDelegate delegate,
