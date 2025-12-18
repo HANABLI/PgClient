@@ -129,6 +129,17 @@ namespace Postgresql
         throw std::runtime_error(std::string("PgResult: invalid bool in '") + colName + "'");
     }
 
+    Json::Value PgResult::Json(int row, const char* colName, Json::Value::Type type) const {
+        const int col = ColIndex(colName);
+        if (IsNull(row, col))
+            throw std::runtime_error(std::string("PgResult: required column'") + colName +
+                                     "'is Null");
+        auto v = View(row, col);
+        Json::Value j(type);
+        j.FromEncoding(std::string(v));
+        return j;
+    }
+
     SystemUtils::DiagnosticsSender::UnsubscribeDelegate PgResult::SubscribeToDiagnostics(
         SystemUtils::DiagnosticsSender::DiagnosticMessageDelegate delegate, size_t minLevel) {
         return impl_->diagnosticsSender.SubscribeToDiagnostics(delegate, minLevel);

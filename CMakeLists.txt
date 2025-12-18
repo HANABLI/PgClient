@@ -40,6 +40,7 @@ endif()
 
 target_link_libraries(${this} PUBLIC
     SystemUtils
+    Json
 )
 
 target_include_directories(${this} PUBLIC include)

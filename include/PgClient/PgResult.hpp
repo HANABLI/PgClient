@@ -10,6 +10,7 @@
  */
 #include <SystemUtils/DiagnosticsSender.hpp>
 #include <StringUtils/StringUtils.hpp>
+#include <Json/Json.hpp>
 #include <string_view>
 #include <libpq-fe.h>
 #include <memory.h>
@@ -60,6 +61,8 @@ namespace Postgresql
         int Int(int row, const char* colName, int def) const;
 
         bool Bool(int row, const char* colName, bool def) const;
+
+        Json::Value Json(int row, const char* colName, Json::Value::Type type) const;
 
         SystemUtils::DiagnosticsSender::UnsubscribeDelegate SubscribeToDiagnostics(
             SystemUtils::DiagnosticsSender::DiagnosticMessageDelegate delegate,
