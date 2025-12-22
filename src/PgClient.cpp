@@ -8,6 +8,8 @@
  */
 
 #include <PgClient/PgClient.hpp>
+#include <chrono>
+#include <thread>
 
 namespace Postgresql
 {
@@ -94,6 +96,53 @@ namespace Postgresql
             return nullptr;
         }
         return res;
+    }
+
+    /**
+     * This method start a listener to the given channel.
+     */
+    bool PgClient::Listen(const std::string& channel) {
+        const std::string sql = "LISTEN" + channel + ";";
+        auto* r = Exec(sql);
+        if (!r)
+            return false;
+        PQClear(r);
+        return true;
+    }
+
+    /**
+     * This method return a payload when notify is available
+     */
+    bool PgClient::PollNotify(std::string& outChannel, std::string& outPayload) {
+        if (!impl_->conn)
+            return false;
+
+        if (PQconsumeInput(impl_->conn) == 0)
+        {
+            impl_->lastError = PQerrorMessage(impl_->conn);
+            return false;
+        }
+
+        PGnotify* n = PQnotifies(impl_->conn);
+        if (!n)
+            return false;
+
+        outChannel = n->relname ? n->relname : "";
+        outPayload = n->extra ? n->extra : "";
+        PQfreemem(n);
+        return true;
+    }
+
+    bool PgClient::WaitNotify(std::string& outChannel, std::string& outPayload, int timeoutMs) {
+        const auto deadline =
+            std::chrono::steady_clock::now() + std::chrono::milliseconds(timeoutMs);
+        while (std::chrono::steady_clock::now() < deadline)
+        {
+            if (PollNotify(outChannel, outPayload))
+                return true;
+            std::this_thread::sleep_for(std::chrono::microseconds(10));
+            return false;
+        }
     }
 
     SystemUtils::DiagnosticsSender::UnsubscribeDelegate PgClient::SubscribeToDiagnostics(

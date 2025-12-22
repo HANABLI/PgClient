@@ -50,6 +50,22 @@ namespace Postgresql
          */
         PGresult* ExecParams(const std::string& sql, const std::vector<std::string>& params);
 
+        /**
+         * This method start a listener to the given channel.
+         */
+        bool Listen(const std::string& channel);
+
+        /**
+         * This method return a payload when notify is available
+         */
+        bool PollNotify(std::string& outChannel, std::string& outPayload);
+
+        /**
+         * This method wait for the given timeout value and then attempt pollnotify
+         *
+         */
+        bool WaitNotify(std::string& outChannel, std::string& outPayload, int timeoutMs);
+
         SystemUtils::DiagnosticsSender::UnsubscribeDelegate SubscribeToDiagnostics(
             SystemUtils::DiagnosticsSender::DiagnosticMessageDelegate delegate,
             size_t minLevel = 0);
