@@ -23,7 +23,7 @@ namespace Postgresql
     {  // Life cycle managment
 
     public:
-        ~PgClient() = default;
+        ~PgClient();
         PgClient(const PgClient&) = delete;
         PgClient(PgClient&&) noexcept = default;
         PgClient& operator=(const PgClient&) = delete;

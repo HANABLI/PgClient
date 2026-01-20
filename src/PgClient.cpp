@@ -31,6 +31,7 @@ namespace Postgresql
     };
 
     PgClient::PgClient() : impl_(std::make_unique<Impl>()) {}
+    PgClient::~PgClient() noexcept = default;
 
     /**
      * This is the connect method.
