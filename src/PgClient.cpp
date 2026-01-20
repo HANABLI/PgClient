@@ -10,6 +10,7 @@
 #include <PgClient/PgClient.hpp>
 #include <chrono>
 #include <thread>
+#include <functional>
 
 namespace Postgresql
 {
@@ -101,13 +102,23 @@ namespace Postgresql
     /**
      * This method start a listener to the given channel.
      */
+
     bool PgClient::Listen(const std::string& channel) {
-        const std::string sql = "LISTEN" + channel + ";";
-        auto* r = Exec(sql);
+        const std::string sql = "LISTEN " + channel + ";";
+        PGresult* r = Exec(sql);
         if (!r)
             return false;
-        PQClear(r);
+        PQclear(r);
         return true;
+    }
+
+    bool PgClient::Listen(const std::string& channel, const std::function<void()>& fn) {
+        if (fn && Listen(channel))
+        {
+            fn();
+            return true;
+        }
+        return false;
     }
 
     /**

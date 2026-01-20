@@ -15,11 +15,13 @@
 #include <vector>
 #include <stdexcept>
 #include <memory>
+#include <functional>
 
 namespace Postgresql
 {
     class PgClient
     {  // Life cycle managment
+
     public:
         ~PgClient() = default;
         PgClient(const PgClient&) = delete;
@@ -54,6 +56,8 @@ namespace Postgresql
          * This method start a listener to the given channel.
          */
         bool Listen(const std::string& channel);
+
+        bool Listen(const std::string& channel, const std::function<void()>& fn);
 
         /**
          * This method return a payload when notify is available
