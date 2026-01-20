@@ -154,8 +154,8 @@ namespace Postgresql
             if (PollNotify(outChannel, outPayload))
                 return true;
             std::this_thread::sleep_for(std::chrono::microseconds(10));
-            return false;
         }
+        return false;
     }
 
     SystemUtils::DiagnosticsSender::UnsubscribeDelegate PgClient::SubscribeToDiagnostics(
