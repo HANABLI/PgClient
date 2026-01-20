@@ -18,6 +18,18 @@
 
 namespace Postgresql
 {
+    enum class PgStatus
+    {
+        Empty,
+        CommandOk,
+        TuplesOk,
+        CopyOut,
+        CopyIn,
+        BadResponse,
+        NonFatalError,
+        FatalError,
+        Unknown
+    };
     class PgResult
     {
         // Lyfe Cycle Managment
@@ -48,7 +60,7 @@ namespace Postgresql
 
         void Reset(PGresult* r = nullptr) noexcept;
 
-        ExecStatusType Status() const;
+        PgStatus Status() const;
 
         std::string_view View(int row, int col) const;
 

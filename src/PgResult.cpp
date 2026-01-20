@@ -29,6 +29,30 @@ namespace Postgresql
             if (!result)
             { diagnosticsSender.SendDiagnosticInformationString(2, "PgResult: null PGresult*"); }
         }
+
+        PgStatus MapStatus(ExecStatusType s) noexcept {
+            switch (s)
+            {
+            case PGRES_EMPTY_QUERY:
+                return PgStatus::Empty;
+            case PGRES_COMMAND_OK:
+                return PgStatus::CommandOk;
+            case PGRES_TUPLES_OK:
+                return PgStatus::TuplesOk;
+            case PGRES_COPY_OUT:
+                return PgStatus::CopyOut;
+            case PGRES_COPY_IN:
+                return PgStatus::CopyIn;
+            case PGRES_BAD_RESPONSE:
+                return PgStatus::BadResponse;
+            case PGRES_NONFATAL_ERROR:
+                return PgStatus::NonFatalError;
+            case PGRES_FATAL_ERROR:
+                return PgStatus::FatalError;
+            default:
+                return PgStatus::Unknown;
+            }
+        }
     };
 
     PgResult::PgResult(PGresult* r) : impl_(std::make_unique<Impl>()) { impl_->result = r; }
@@ -74,9 +98,9 @@ namespace Postgresql
         impl_->result = r;
     }
 
-    ExecStatusType PgResult::Status() const {
+    PgStatus PgResult::Status() const {
         impl_->Ensure();
-        return PQresultStatus(impl_->result);
+        return impl_->MapStatus(PQresultStatus(impl_->result));
     }
 
     std::string_view PgResult::View(int row, int col) const {
