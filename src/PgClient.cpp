@@ -37,7 +37,8 @@ namespace Postgresql
      */
     bool PgClient::Connect(const std::string& conninfo) {
         impl_->conn = PQconnectdb(conninfo.c_str());
-        if (PQstatus(impl_->conn) != CONNECTION_OK)
+        auto state = PQstatus(impl_->conn);
+        if (state != CONNECTION_OK)
         {
             impl_->lastError = PQerrorMessage(impl_->conn);
             PQfinish(impl_->conn);
