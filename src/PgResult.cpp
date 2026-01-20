@@ -34,6 +34,7 @@ namespace Postgresql
     PgResult::PgResult(PGresult* r) : impl_(std::make_unique<Impl>()) { impl_->result = r; }
 
     PgResult::PgResult(PgResult&& other) { impl_->result = std::move(other.Raw()); }
+    PgResult::~PgResult() noexcept = default;
 
     PgResult& PgResult::operator=(PgResult&& other) {
         impl_->result = std::move(other.Raw());

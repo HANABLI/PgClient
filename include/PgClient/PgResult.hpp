@@ -22,7 +22,7 @@ namespace Postgresql
     {
         // Lyfe Cycle Managment
     public:
-        ~PgResult() noexcept = default;
+        ~PgResult() noexcept;
         PgResult(const PgResult&) = delete;
         PgResult(PgResult&&);
         PgResult& operator=(const PgResult&) = delete;
