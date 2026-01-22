@@ -18,20 +18,23 @@ add_library(${this} STATIC ${Sources} ${Headers})
 set_target_properties(${this} PROPERTIES
     FOLDER Libraries
 )
-# ---- libpq (PostgreSQL client) ----
-if (WIN32)
-    # Windows → vcpkg
-    find_package(libpq CONFIG REQUIRED)
-    target_link_libraries(${this} PUBLIC libpq)
+if(WIN32)
+  # With vcpkg toolchain enabled, this will search vcpkg installed prefixes too.
+  find_path(LIBPQ_INCLUDE_DIR libpq-fe.h REQUIRED)
+  find_library(LIBPQ_LIBRARY NAMES libpq REQUIRED)
 
-elseif (UNIX)
-    # Linux / macOS → system package
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(LIBPQ REQUIRED libpq)
+  message(STATUS "Found libpq include: ${LIBPQ_INCLUDE_DIR}, lib: ${LIBPQ_LIBRARY}")
+  target_include_directories(${this} PUBLIC ${LIBPQ_INCLUDE_DIR})
+  target_link_libraries(${this} PUBLIC ${LIBPQ_LIBRARY})
 
-    target_include_directories(${this} PUBLIC ${LIBPQ_INCLUDE_DIRS})
-    target_link_libraries(${this} PUBLIC ${LIBPQ_LIBRARIES})
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(LIBPQ REQUIRED libpq)
+  target_include_directories(${this} PUBLIC ${LIBPQ_INCLUDE_DIRS})
+  target_link_libraries(${this} PUBLIC ${LIBPQ_LIBRARIES})
 endif()
+
+
 
 # find_path(LIBPQ_INCLUDE_DIR libpq-fe.h
 #   HINTS
